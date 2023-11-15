@@ -219,3 +219,7 @@ ggplot(results_df, aes(x = true_mu, y = power)) +
        x = "True Value of mu",
        y = "Power")
 ```
+
+The power of a statistical test is the probability of correctly rejecting a false null hypothesis. The graph indicates a rising trend, which implies increased power as the effect size (mu) becomes larger for a one-sample t-test.    
+When the true value of effect size is zero (mu=0), the power is low (0.0484). This indicates that the one-sample t-test has a low probability of correctly rejecting a false null hypothesis when the true.    
+For the other effect sizes (mu), an increase in mu results to an increase in power. This is expected, as larger effect sizes, when present, are more likely to be correctly detected, hence the rise in higher power.
