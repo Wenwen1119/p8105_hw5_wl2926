@@ -150,3 +150,14 @@ simulations_mu_0 <- tibble(
   unnest(test_result) %>%
   mutate(reject_null = p.value < alpha,
          estimate_rejected = if_else(reject_null, estimate, NA_real_))
+#calculate power for mu=0
+power_mu_0 <- mean(simulations_mu_0$reject_null)
+power_mu_0
+#compute average estimate for mu
+avg_estimate_mu_0 <- mean(simulations_mu_0$estimate)
+avg_estimate_mu_0
+#compute average estimate for rejected samples only
+avg_estimate_rejected_mu_0 <- mean(simulations_mu_0$estimate_rejected, 
+                                   na.rm = TRUE)
+avg_estimate_rejected_mu_0
+```
