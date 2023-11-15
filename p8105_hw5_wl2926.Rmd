@@ -208,3 +208,14 @@ results_df <- bind_rows(
 print(results_df)
 
 ```
+
+## Question 1: Make a plot showing the proportion of times the null hypothesis was rejected (the power of the test) on the y-axis and the true value of (mu) on the x-axis. Describe the association between effect size and power.    
+
+```{r}
+#Power vs true value of mu
+ggplot(results_df, aes(x = true_mu, y = power)) +
+  geom_line() +
+  labs(title = "Power vs true value of mu",
+       x = "True Value of mu",
+       y = "Power")
+```
