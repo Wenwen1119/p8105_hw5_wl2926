@@ -1,0 +1,63 @@
+---
+title: "p8105_hw5_wl2926"
+writer: "Wenwen Li"
+output: github_document
+date: "2023-10-18"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(ggpubr)
+library(broom)
+theme_set(theme_pubr() + theme(
+  legend.position = "right"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  scipen = 999)
+```
+
+# Problem 2: Data from a longitudinal study.    
+
+```{r}
+#get the list of file names
+file_names <- list.files(path = "data/",
+                         pattern = ".csv",
+                         full.names = TRUE)
+file_names
+
+```  
+
+```{r}
+#data importation and preparation
+longitudinal_data <- tibble(file = file_names) %>%
+  mutate(
+    arm = str_extract(file, "(con|exp)"), #arm group names from file names
+    subject_id = str_extract(file, "\\d+"),#subjectID as numeric part,file name
+    data = purrr::map(file, read_csv)) %>% #import data
+  unnest(data) %>%#expand data list into rows and columns
+  select(subject_id, arm, everything()) %>%
+  select(-file) #remove file names column
+#view first few rows of resulting tibble
+longitudinal_data[c(1:4, 16:20),]
+```
+
+```{r}
+#convert data to long format for ease of plotting
+spaghetti_plot_data <- longitudinal_data %>%
+  pivot_longer(cols = starts_with("week_"), names_to = "week",
+               values_to = "value") %>%
+  mutate(week_numeric = as.numeric(sub("week_", "", week))) 
+
+#spaghetti plot of subjects grouped by arm over time.
+ggplot(spaghetti_plot_data, aes(x = week_numeric, y = value,
+                              group = subject_id, color=subject_id)) +
+  geom_line(linewidth=1.5) +
+  facet_grid(~arm) +
+  labs(title = "Spaghetti plot of observations over time",
+       x = "Week",
+       y = "Observation",
+       color="Subject ID")
+
+```
+The experimental group's observations are increasing with time, while the observations for the control group appear to oscillate around the same values. 
