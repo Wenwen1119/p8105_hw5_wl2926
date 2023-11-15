@@ -161,3 +161,50 @@ avg_estimate_rejected_mu_0 <- mean(simulations_mu_0$estimate_rejected,
                                    na.rm = TRUE)
 avg_estimate_rejected_mu_0
 ```
+
+```{r}
+#set seed for reproducibility
+set.seed(1111)
+#define design elements
+n <- 30
+sigma <- 5
+alpha <- 0.05
+num_datasets <- 5000
+#list of the other mu values
+mu_values <- c(1, 2, 3, 4, 5, 6)
+#initialize an empty data frame to store results
+results_df <- tibble()
+#loop through each mu value
+for (mu in mu_values) {
+  simulations_mu <- tibble(
+    true_mu = rep(mu, num_datasets),
+    data = map(1:num_datasets, ~rnorm(n, mean = mu, sd = sigma)),
+    test_result = map(data, ~broom::tidy(t.test(.x, mu = 0)))) %>%
+    unnest(test_result) %>% mutate(
+      reject_null = p.value < alpha,
+      estimate_rejected = if_else(reject_null, estimate, NA_real_))
+  #calculate power for the current mu
+  power_mu <- mean(simulations_mu$reject_null)
+  #compute average estimate for the current mu
+  avg_estimate_mu <- mean(simulations_mu$estimate)
+  #compute average estimate for rejected samples only
+  avg_estimate_rejected_mu <- mean(simulations_mu$estimate_rejected, 
+                                   na.rm = TRUE)
+  #add results to the overall data frame
+  results_df <- bind_rows(results_df, tibble(
+    true_mu = mu,
+    power = power_mu,
+    avg_estimate = avg_estimate_mu,
+    avg_estimate_rejected = avg_estimate_rejected_mu))
+}
+#merge results for mu=0 with the overall results
+results_df <- bind_rows(
+  tibble(
+    true_mu = 0,
+    power = power_mu_0,
+    avg_estimate = avg_estimate_mu_0,
+    avg_estimate_rejected=avg_estimate_rejected_mu_0), results_df)
+#print the results data frame
+print(results_df)
+
+```
