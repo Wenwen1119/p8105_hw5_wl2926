@@ -61,3 +61,21 @@ ggplot(spaghetti_plot_data, aes(x = week_numeric, y = value,
 
 ```
 The experimental group's observations are increasing with time, while the observations for the control group appear to oscillate around the same values. 
+
+# Problem 3: Effect size and power in study design. 
+```{r}
+#set random number generator seed
+set.seed(1111)
+#set design elements
+n <- 30
+sigma <- 5
+alpha <- 0.05
+num_datasets <- 5000
+true_mu <- 0  #specify mu value
+simulations_mu_0 <- tibble(
+  true_mu = rep(true_mu, num_datasets),
+  data = map(1:num_datasets, ~rnorm(n, mean = true_mu, sd = sigma)),
+  test_result = map(data, ~broom::tidy(t.test(.x, mu = 0)))) %>%
+  unnest(test_result) %>%
+  mutate(reject_null = p.value < alpha,
+         estimate_rejected = if_else(reject_null, estimate, NA_real_))
