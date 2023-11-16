@@ -223,3 +223,19 @@ ggplot(results_df, aes(x = true_mu, y = power)) +
 The power of a statistical test is the probability of correctly rejecting a false null hypothesis. The graph indicates a rising trend, which implies increased power as the effect size (mu) becomes larger for a one-sample t-test.    
 When the true value of effect size is zero (mu=0), the power is low (0.0484). This indicates that the one-sample t-test has a low probability of correctly rejecting a false null hypothesis when the true.    
 For the other effect sizes (mu), an increase in mu results to an increase in power. This is expected, as larger effect sizes, when present, are more likely to be correctly detected, hence the rise in higher power.
+
+## Question 2: Make a plot showing the average estimate of mu_hat  on the y-axis and the true value of mu on the x-axis. Make a second plot (or overlay on the first) of the average estimate of mu_hat, only in samples for which the null hypothesis was rejected on the y-axis, and the true value of mμ on the x-axis. Is the sample average of mu_hat across tests for which the null hypothesis is rejected approximately equal to the true value of mu? Why or why not?
+      
+```{r}
+#average mu estimates vs true value of mu
+ggplot(results_df, aes(x = true_mu)) +
+  geom_line(aes(y = avg_estimate), color = "blue", linetype = "solid") +
+  geom_line(aes(y = avg_estimate_rejected), color = "red", linetype = "dashed") +
+  labs(title = "Average estimate vs true value of mu",
+       x = "True value of mu",
+       y = "Average estimate")
+```
+For smaller mu sizes (mu < 3) values, the average mu estimate for all samples is smaller and better approximates of the true mu values, compared to the average mu estimates for only the samples where the null hypothesis is rejected. On the other hand, the larger mu values, both the full, and null-hypothesis-rejected sample average estimates are approximately equal.    
+
+When the true mu is small (e.g., mu=1), the effect size is subtle. In this scenario, the average estimate across all samples tends to be closer to the true effect size mu because the data from all samples, including those where the null hypothesis is not rejected, contribute to the average. In samples where the null hypothesis is rejected, the estimate may be influenced by noise, leading to a slightly larger average estimate.    
+When the mu is large (e.g., mu=5), the effect size is more pronounced. In this case, the average estimate across all samples is still close to the true effect size mu, because the effect is strong and detectable in most of the samples. In samples where the null hypothesis is rejected, the estimate converges to the true mu more closely because the effect size is significant. 
